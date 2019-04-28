@@ -1,6 +1,6 @@
 # chartjs-plugin-datasource
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-datasource.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-datasource) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-datasource.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-datasource) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-datasource/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-datasource) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-datasource.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-datasource)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-datasource.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-datasource) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-datasource.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-datasource) [![Travis](https://img.shields.io/travis/com/nagix/chartjs-plugin-datasource/master.svg?style=flat-square)](https://travis-ci.com/nagix/chartjs-plugin-datasource) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-datasource.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-datasource)
 
 *[Chart.js](https://www.chartjs.org) plugin for automatic data loading*
 
@@ -98,7 +98,7 @@ Common options between data source types are listed below.
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
-| `type` | `string` | | Data source type. [`'csv'`](#csv-data-source), [`'json'`](#json-data-source), [`'jsonl'`](#json-lines-data-source) and [`'sheet'`](#sheet-data-source) are supported by default. If not set, the type will be determined based on the [file extension](#supported-file-format) in the specified URL. If the URL doesn't have an extension, `'json'` will be set.
+| `type` | `string` | | Data source type. [`'csv'`](#csv-data-source), [`'json'`](#json-data-source), [`'jsonl'`](#json-lines-data-source) and [`'sheet'`](#sheet-data-source) are supported by default. If not set, the type will be determined based on the [file extension](#supported-data-format) in the specified URL. If the URL doesn't have an extension, `'json'` will be set.
 | `url` | `string` | | Data source URL. It must have the same origin as your page, or a response must have a proper [CORS](#cross-origin-resource-sharing-cors) header set.
 
 ### CSV Data Source
