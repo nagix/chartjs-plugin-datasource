@@ -1,0 +1,25 @@
+{
+	"labels": ["Temperature", "Precipitation"],
+	"datasets": [{
+		"label": "January",
+		"data": [7, 8.1]
+	}, {
+		"label": "February",
+		"data": [7, 14.9]
+	}, {
+		"label": "March",
+		"data": [10, 41.0]
+	}, {
+		"label": "April",
+		"data": [15, 31.4]
+	}, {
+		"label": "May",
+		"data": [20, 42.6]
+	}, {
+		"label": "June",
+		"data": [23, 57.5]
+	}, {
+		"label": "July",
+		"data": [26, 36.0]
+	}]
+}

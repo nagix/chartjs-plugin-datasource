@@ -1,0 +1,15 @@
+dataset,month,value
+Temperature,January,7
+Temperature,February,7
+Temperature,March,10
+Temperature,April,15
+Temperature,May,20
+Temperature,June,23
+Temperature,July,26
+Precipitation,January,8.1
+Precipitation,February,14.9
+Precipitation,March,41.0
+Precipitation,April,31.4
+Precipitation,May,42.6
+Precipitation,June,57.5
+Precipitation,July,36.0

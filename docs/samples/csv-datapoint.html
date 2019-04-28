@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>chartjs-plugin-datasource sample</title>
+ 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Indie+Flower">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="../../dist/chartjs-plugin-datasource.js"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		.chart {
+			margin: auto;
+			width: 75%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chart">
+		<canvas id="myChart"></canvas>
+	</div>
+	<div class="container mt-3">
+		<ul class="nav nav-tabs mb-2" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="js-tab" data-toggle="tab" href="#js" role="tab" aria-controls="js" aria-selected="true">JavaScript</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="csv-tab" data-toggle="tab" href="#csv" role="tab" aria-controls="csv" aria-selected="false">CSV</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="js" role="tabpanel" aria-labelledby="js-tab">
+				<pre class="prettyprint lang-js p-3 bg-light">var chartColors = {
+	red: 'rgb(255, 99, 132)',
+	blue: 'rgb(54, 162, 235)'
+};
+
+var color = Chart.helpers.color;
+var config = {
+	type: 'bar',
+	data: {
+		datasets: [{
+			type: 'line',
+			yAxisID: 'temperature',
+			backgroundColor: 'transparent',
+			borderColor: chartColors.red,
+			pointBackgroundColor: chartColors.red,
+			tension: 0,
+			fill: false
+		}, {
+			yAxisID: 'precipitation',
+			backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+			borderColor: 'transparent'
+		}]
+	},
+	plugins: [ChartDataSource],
+	options: {
+		title: {
+			display: true,
+			text: 'CSV data source (datapoint) sample'
+		},
+		scales: {
+			xAxes: [{
+				scaleLabel: {
+					display: true,
+					labelString: 'Month'
+				}
+			}],
+			yAxes: [{
+				id: 'temperature',
+				gridLines: {
+					drawOnChartArea: false
+				},
+				scaleLabel: {
+					display: true,
+					labelString: 'Temperature (°C)'
+				}
+			}, {
+				id: 'precipitation',
+				position: 'right',
+				gridLines: {
+					drawOnChartArea: false
+				},
+				scaleLabel: {
+					display: true,
+					labelString: 'Precipitation (mm)'
+				}
+			}]
+		},
+		plugins: {
+			datasource: {
+				type: 'csv',
+				url: 'sample-datapoint.csv',
+				delimiter: ',',
+				rowMapping: 'datapoint',
+				datapointLabels: true,
+				datapointLabelMapping: {
+					_dataset: 'dataset',
+					_index: 'month',
+					x: 'month',
+					y: 'value'
+				}
+			}
+		}
+	}
+};
+
+window.onload = function() {
+	var ctx = document.getElementById('myChart').getContext('2d');
+	window.myChart = new Chart(ctx, config);
+};</pre>
+			</div>
+			<div class="tab-pane fade" id="csv" role="tabpanel" aria-labelledby="csv-tab">
+				<pre class="prettyprint lang-csv p-3 bg-light">dataset,month,value
+Temperature,January,7
+Temperature,February,7
+Temperature,March,10
+Temperature,April,15
+Temperature,May,20
+Temperature,June,23
+Temperature,July,26
+Precipitation,January,8.1
+Precipitation,February,14.9
+Precipitation,March,41.0
+Precipitation,April,31.4
+Precipitation,May,42.6
+Precipitation,June,57.5
+Precipitation,July,36.0</pre>
+			</div>
+			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
+				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datasource@0.1.0"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div&gt;
+		&lt;canvas id="myChart"&gt;&lt;/canvas&gt;
+	&lt;/div&gt;
+&lt;/body&gt;</pre>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			blue: 'rgb(54, 162, 235)'
+		};
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'bar',
+			data: {
+				datasets: [{
+					type: 'line',
+					yAxisID: 'temperature',
+					backgroundColor: 'transparent',
+					borderColor: chartColors.red,
+					pointBackgroundColor: chartColors.red,
+					tension: 0,
+					fill: false
+				}, {
+					yAxisID: 'precipitation',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: 'transparent'
+				}]
+			},
+			plugins: [ChartDataSource],
+			options: {
+				title: {
+					display: true,
+					text: 'CSV data source (datapoint) sample'
+				},
+				scales: {
+					xAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						id: 'temperature',
+						gridLines: {
+							drawOnChartArea: false
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Temperature (°C)'
+						}
+					}, {
+						id: 'precipitation',
+						position: 'right',
+						gridLines: {
+							drawOnChartArea: false
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Precipitation (mm)'
+						}
+					}]
+				},
+				plugins: {
+					datasource: {
+						type: 'csv',
+						url: 'sample-datapoint.csv',
+						delimiter: ',',
+						rowMapping: 'datapoint',
+						datapointLabels: true,
+						datapointLabelMapping: {
+							_dataset: 'dataset',
+							_index: 'month',
+							x: 'month',
+							y: 'value'
+						}
+					}
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('myChart').getContext('2d');
+			window.myChart = new Chart(ctx, config);
+		};
+	</script>
+</body>
+
+</html>

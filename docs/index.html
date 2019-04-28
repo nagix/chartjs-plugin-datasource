@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/css/octicons.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>chartjs-plugin-datasource</title>
+    <meta property="og:title" content="chartjs-plugin-datasource" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="canonical" href="https://nagix.github.io/chartjs-plugin-datasource" />
+    <meta property="og:url" content="https://nagix.github.io/chartjs-plugin-datasource" />
+    <meta property="og:site_name" content="chartjs-plugin-datasource" />
+    <meta name="twitter:site" content="@nagix" />
+    <meta name="theme-color" content="#ffffff">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/xlsx@0.14.2/dist/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-deferred@1.0.1"></script>
+    <script src="../dist/chartjs-plugin-datasource.js"></script>
+    <style>
+      table {
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 16px;
+      }
+      th,td {
+        border: 1px lightgray solid;
+      }
+      th {
+        background-color: #eeeeee;
+        padding: 8px 34px;
+        font-weight: 500;
+      }
+      td {
+        padding: 8px;
+        font-weight: 300;
+        text-align: left;
+      }
+      .col-header {
+        padding: 8px 14px;
+      }
+      .text-right {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="hero-spot" class="hero-spot">
+      <h1>chartjs-plugin-datasource</h1>
+      <h2><a href="./samples">Samples</a> | <a href="https://github.com/nagix/chartjs-plugin-datasource">GitHub</a></h2>
+    </section>
+    <section id="tutorial" class="tutorial">
+      <h2><a href="https://www.chartjs.org">Chart.js</a> plugin for automatic data loading.<br />You will able to draw a chart only by specifying<br />a data source like CSV, JSON and Excel files.</h2>
+
+      <ul id="plain-js" class="tutorial-list wrapper active">
+
+        <li>
+          <h4>Include scripts</h4>
+          <p>First, we need to include <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a>, <a href="https://github.com/SheetJS/js-xlsx">SheetJS (xlsx)</a> and <a href="https://github.com/nagix/chartjs-plugin-datasource/releases/latest">chartjs-plugin-datasource.js</a> in our page.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&lt;script type="text/javascript" src="Chart.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="xlsx.full.min.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="chartjs-plugin-datasource.js"&gt;&lt;/script&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Create a canvas</h4>
+          <p>We need to have a canvas in our page.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&lt;canvas id="myChart"&gt;&lt;/canvas&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Prepare a spreadsheet file</h4>
+          <p>We create an <a href="samples/sample-dataset.xlsx">Excel spreadsheet file</a> as a data source for our chart.<br />We have two datasets that contain temperature and precipitation for each month.<br />The first row and column will be used as index labels and dataset labels respectively.</p>
+          <table>
+            <thead>
+              <tr>
+                <th class="col-header"></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
+                <th>F</th>
+                <th>G</th>
+                <th>H</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="col-header">1</th>
+                <td></td>
+                <td>January</td>
+                <td>February</td>
+                <td>March</td>
+                <td>April</td>
+                <td>May</td>
+                <td>June</td>
+                <td>July</td>
+              </tr>
+              <tr>
+                <th class="col-header">2</th>
+                <td>Temperature</td>
+                <td class="text-right">7</td>
+                <td class="text-right">7</td>
+                <td class="text-right">10</td>
+                <td class="text-right">15</td>
+                <td class="text-right">20</td>
+                <td class="text-right">23</td>
+                <td class="text-right">26</td>
+              </tr>
+              <tr>
+                <th class="col-header">3</th>
+                <td>Precipitation</td>
+                <td class="text-right">8.1</td>
+                <td class="text-right">14.9</td>
+                <td class="text-right">41.0</td>
+                <td class="text-right">31.4</td>
+                <td class="text-right">42.6</td>
+                <td class="text-right">57.5</td>
+                <td class="text-right">36.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </li>
+
+        <li>
+          <h4>Create a chart</h4>
+          <p>Now, we can create a chart. We add a script to our page specifying<br />spreadsheet's URL. Don't forget to specify ChartDataSource as a plugins option.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>var ctx = document.getElementById('myChart').getContext('2d');</p>
+              <p>var chart = new Chart(ctx, {</p>
+              <p>&nbsp;&nbsp;type: 'bar',</p>
+              <p>&nbsp;&nbsp;plugins: [ChartDataSource],</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-dataset.xlsx'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;}
+              <p>});</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart1"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>Add other chart options</h4>
+          <p>In order to make the chart more attractive, let's mix<br />bars and line, use multiple Y axes and add colors.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...
+              <p>&nbsp;&nbsp;data: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'line',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxisID: 'temperature',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'transparent',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pointBackgroundColor: 'rgb(255, 99, 132)',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tension: 0,
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill: false
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxisID: 'precipitation',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'transparent'
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}]
+              <p>&nbsp;&nbsp;},
+              <p>&nbsp;&nbsp;...
+              <p>&nbsp;&nbsp;options: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxes: [{
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 'temperature',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridLines: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawOnChartArea: false
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 'precipitation',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: 'right',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridLines: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawOnChartArea: false
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;},
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart2"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>How to load index-mapped row data</h4>
+          <p>What if rows and columns in the spreadsheet are switched?<br />Below is an example of a <a href="samples/sample-index.xlsx">spreadsheet</a> and plugin options for<br />loading the data in which each row contains values for one index.</p>
+          <table>
+            <thead>
+              <tr>
+                <th class="col-header"></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="col-header">1</th>
+                <td></td>
+                <td>Temperature</td>
+                <td>Precipitation</td>
+              </tr>
+              <tr>
+                <th class="col-header">2</th>
+                <td>January</td>
+                <td class="text-right">7</td>
+                <td class="text-right">8.1</td>
+              </tr>
+              <tr>
+                <th class="col-header">3</th>
+                <td>February</td>
+                <td class="text-right">7</td>
+                <td class="text-right">14.9</td>
+              </tr>
+              <tr>
+                <th class="col-header">4</th>
+                <td>March</td>
+                <td class="text-right">10</td>
+                <td class="text-right">41.0</td>
+              </tr>
+              <tr>
+                <th class="col-header">5</th>
+                <td>April</td>
+                <td class="text-right">15</td>
+                <td class="text-right">31.4</td>
+              </tr>
+              <tr>
+                <th class="col-header">6</th>
+                <td>May</td>
+                <td class="text-right">20</td>
+                <td class="text-right">42.6</td>
+              </tr>
+              <tr>
+                <th class="col-header">7</th>
+                <td>June</td>
+                <td class="text-right">23</td>
+                <td class="text-right">57.5</td>
+              </tr>
+              <tr>
+                <th class="col-header">8</th>
+                <td>July</td>
+                <td class="text-right">26</td>
+                <td class="text-right">36.0</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-index.xlsx',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rowMapping: 'index'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart3"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>How to load datapoint-mapped row data</h4>
+          <p>Data might be in form of <a href="http://vita.had.co.nz/papers/tidy-data.pdf">Tidy Data</a>.<br />You can load <a href="samples/sample-datapoint.xlsx">this type of data</a> by setting rowMapping option to 'datapoint'.<br />The first row will be used as property names for Point objects.</p>
+          <table>
+            <thead>
+              <tr>
+                <th class="col-header"></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="col-header">1</th>
+                <td>dataset</td>
+                <td>month</td>
+                <td>value</td>
+              </tr>
+              <tr>
+                <th class="col-header">2</th>
+                <td>Temperature</td>
+                <td>January</td>
+                <td class="text-right">7</td>
+              </tr>
+              <tr>
+                <th class="col-header">3</th>
+                <td>Temperature</td>
+                <td>February</td>
+                <td class="text-right">7</td>
+              </tr>
+              <tr>
+                <th class="col-header">4</th>
+                <td>Temperature</td>
+                <td>March</td>
+                <td class="text-right">10</td>
+              </tr>
+              <tr>
+                <th class="col-header">5</th>
+                <td>Temperature</td>
+                <td>April</td>
+                <td class="text-right">15</td>
+              </tr>
+              <tr>
+                <th class="col-header">6</th>
+                <td>Temperature</td>
+                <td>May</td>
+                <td class="text-right">20</td>
+              </tr>
+              <tr>
+                <th class="col-header">7</th>
+                <td>Temperature</td>
+                <td>June</td>
+                <td class="text-right">23</td>
+              </tr>
+              <tr>
+                <th class="col-header">8</th>
+                <td>Temperature</td>
+                <td>July</td>
+                <td class="text-right">26</td>
+              </tr>
+              <tr>
+                <th class="col-header">9</th>
+                <td>Precipitation</td>
+                <td>January</td>
+                <td class="text-right">8.1</td>
+              </tr>
+              <tr>
+                <th class="col-header">10</th>
+                <td>Precipitation</td>
+                <td>February</td>
+                <td class="text-right">14.9</td>
+              </tr>
+              <tr>
+                <th class="col-header">11</th>
+                <td>Precipitation</td>
+                <td>March</td>
+                <td class="text-right">41.0</td>
+              </tr>
+              <tr>
+                <th class="col-header">12</th>
+                <td>Precipitation</td>
+                <td>April</td>
+                <td class="text-right">31.4</td>
+              </tr>
+              <tr>
+                <th class="col-header">13</th>
+                <td>Precipitation</td>
+                <td>May</td>
+                <td class="text-right">42.6</td>
+              </tr>
+              <tr>
+                <th class="col-header">14</th>
+                <td>Precipitation</td>
+                <td>June</td>
+                <td class="text-right">57.5</td>
+              </tr>
+              <tr>
+                <th class="col-header">15</th>
+                <td>Precipitation</td>
+                <td>July</td>
+                <td class="text-right">36.0</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-datapoint.xlsx',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rowMapping: 'datapoint',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datapointLabelMapping: {
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_dataset: 'dataset',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_index: 'month',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: 'month',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: 'value'
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart4"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>...and you're done!</h4>
+          <p>See also <a href="https://github.com/nagix/chartjs-plugin-datasource">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <div class="hero-octicon">
+            <span class="mega-octicon octicon-check"></span>
+          </div>
+        </li>
+
+      </ul>
+
+    </section>
+    <script>
+      var ctx1 = document.getElementById('chart1').getContext('2d');
+      var chart1 = new Chart(ctx1, {
+        type: 'bar',
+        plugins: [ChartDataSource],
+        options: { plugins: { datasource: { url: 'samples/sample-dataset.xlsx' } } }
+      });
+
+      var ctx2 = document.getElementById('chart2').getContext('2d');
+      var chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: { datasets: [{
+          type: 'line',
+          yAxisID: 'temperature',
+          backgroundColor: 'transparent',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          tension: 0,
+          fill: false
+        }, {
+          yAxisID: 'precipitation',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'transparent'
+        }] },
+        plugins: [ChartDataSource],
+        options: {
+          scales: {
+            yAxes: [{
+              id: 'temperature',
+              gridLines: { drawOnChartArea: false }
+            }, {
+              id: 'precipitation',
+              position: 'right',
+              gridLines: { drawOnChartArea: false }
+            }]
+          },
+          plugins: { datasource: { url: 'samples/sample-dataset.xlsx' } },
+        }
+      });
+
+      var ctx3 = document.getElementById('chart3').getContext('2d');
+      var chart3 = new Chart(ctx3, {
+        type: 'bar',
+        data: { datasets: [{
+          type: 'line',
+          yAxisID: 'temperature',
+          backgroundColor: 'transparent',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          tension: 0,
+          fill: false
+        }, {
+          yAxisID: 'precipitation',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'transparent'
+        }] },
+        plugins: [ChartDataSource],
+        options: {
+          scales: {
+            yAxes: [{
+              id: 'temperature',
+              gridLines: { drawOnChartArea: false }
+            }, {
+              id: 'precipitation',
+              position: 'right',
+              gridLines: { drawOnChartArea: false }
+            }]
+          },
+          plugins: { datasource: {
+            url: 'samples/sample-index.xlsx',
+            rowMapping: 'index'
+          } },
+        }
+      });
+
+      var ctx4 = document.getElementById('chart4').getContext('2d');
+      var chart4 = new Chart(ctx4, {
+        type: 'bar',
+        data: { datasets: [{
+          type: 'line',
+          yAxisID: 'temperature',
+          backgroundColor: 'transparent',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          tension: 0,
+          fill: false
+        }, {
+          yAxisID: 'precipitation',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'transparent'
+        }] },
+        plugins: [ChartDataSource],
+        options: {
+          scales: {
+            yAxes: [{
+              id: 'temperature',
+              gridLines: { drawOnChartArea: false }
+            }, {
+              id: 'precipitation',
+              position: 'right',
+              gridLines: { drawOnChartArea: false }
+            }]
+          },
+          plugins: { datasource: {
+            url: 'samples/sample-datapoint.xlsx',
+            rowMapping: 'datapoint',
+            datapointLabelMapping: {
+              _dataset: 'dataset',
+              _index: 'month',
+              x: 'month',
+              y: 'value'
+            },
+          } },
+        }
+      });
+    </script>
+    <footer class="page-footer">
+      <ul class="site-footer-links right">
+        <li><a href="https://github.com/nagix"><i class="fa fa-github-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://twitter.com/nagix"><i class="fa fa-twitter-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://www.linkedin.com/in/akihiko-kusanagi"><i class="fa fa-linkedin-square fa-2x" style="color: #999;"></i></a></li>
+      </ul>
+      <a href="/">
+        <img src="/favicon-32x32-glay.png" style="position: absolute; top: 34px; left: 50%; margin-left: -16px;">
+      </a>
+      <ul class="site-footer-links">
+        <li>&copy; 2019 Akihiko Kusanagi</li>
+      </ul>
+    </footer>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-39988758-2', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>

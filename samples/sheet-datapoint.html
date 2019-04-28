@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>chartjs-plugin-datasource sample</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.14.2/dist/xlsx.full.min.js"></script>
+	<script src="../dist/chartjs-plugin-datasource.js"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		.chart {
+			margin: auto;
+			width: 75%;
+		}
+		.text-center {
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chart">
+		<canvas id="myChart"></canvas>
+	</div>
+
+	<script>
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			blue: 'rgb(54, 162, 235)'
+		};
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'bar',
+			data: {
+				datasets: [{
+					type: 'line',
+					yAxisID: 'temperature',
+					backgroundColor: 'transparent',
+					borderColor: chartColors.red,
+					pointBackgroundColor: chartColors.red,
+					tension: 0,
+					fill: false
+				}, {
+					yAxisID: 'precipitation',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: 'transparent'
+				}]
+			},
+			plugins: [ChartDataSource],
+			options: {
+				title: {
+					display: true,
+					text: 'Sheet data source (datapoint) sample'
+				},
+				scales: {
+					xAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						id: 'temperature',
+						gridLines: {
+							drawOnChartArea: false
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Temperature (°C)'
+						}
+					}, {
+						id: 'precipitation',
+						position: 'right',
+						gridLines: {
+							drawOnChartArea: false
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Precipitation (mm)'
+						}
+					}]
+				},
+				plugins: {
+					datasource: {
+						type: 'sheet',
+						url: 'sample-datapoint.xlsx',
+						rowMapping: 'datapoint',
+						datapointLabels: 'Sheet1!A1:C1',
+						datapointLabelMapping: {
+							_dataset: 'dataset',
+							_index: 'month',
+							x: 'month',
+							y: 'value'
+						},
+						data: 'Sheet1!A2:C15'
+					}
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('myChart').getContext('2d');
+			window.myChart = new Chart(ctx, config);
+		};
+	</script>
+</body>
+
+</html>
