@@ -107,10 +107,10 @@ The CSV data source supports delimiter-separated values such as CSV, TSV and PSV
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
-| `delimiter` | `string` | | If not set, the delimiter will be determined based on the file extension in the specified URL. If the URL doesn't have an extension, `','` will be set.
+| `delimiter` | `string` | | Delimiter for values. If not set, the delimiter will be determined based on the file extension in the specified URL. If the URL doesn't have an extension, `','` will be set.
 | `rowMapping` | `string` | `'dataset'` | Element type to which each row is mapped. [more...](#row-mapping)
-| `datasetLabels` | `boolean` | `true` | If `true`, the first column (when `rowMapping` is `'dataset'`) or the first row (when `rowMapping` is `'index'`) will be treated as dataset labels.
-| `indexLabels` | `boolean` | `true` | If `true`, the first row (when `rowMapping` is `'dataset'`) or the first column (when `rowMapping` is `'index'`) will be treated as index labels.
+| `datasetLabels` | `boolean` | `true` | If `true`, the first column (when `rowMapping` is `'dataset'`) or the first row (when `rowMapping` is `'index'`) will be treated as dataset labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`.
+| `indexLabels` | `boolean` | `true` | If `true`, the first row (when `rowMapping` is `'dataset'`) or the first column (when `rowMapping` is `'index'`) will be treated as index labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`.
 | `datapointLabels` | `boolean` | `true` | If `true`, the first row will be treated as property labels for Point objects. If `false`, `['_dataset', 'x', 'y', 'r']` will be used. This option is valid only when `rowMapping` is `'datapoint'`.
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
 
@@ -121,8 +121,8 @@ The JSON data source supports JSON data. The following options are available in 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
 | `rowMapping` | `string` | `'dataset'` | Element type to which each row is mapped. [more...](#row-mapping)
-| `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
-| `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
+| `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
+| `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
 | `data` | `string` | | Simplified JSONPath expression for a two-dimension array of the data. [more...](#simplified-jsonpath)
 
@@ -133,8 +133,8 @@ The JSON Lines data source supports [JSON Lines](http://jsonlines.org) data. The
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
 | `rowMapping` | `string` | `'index'` | Element type to which each row is mapped. [more...](#row-mapping)
-| `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
-| `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
+| `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
+| `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
 | `data` | `string` | | Simplified JSONPath expression for a two-dimension array of the data. [more...](#simplified-jsonpath)
 
@@ -237,9 +237,9 @@ The sheet data source supports various spreadsheet formats such as Excel and Ope
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
 | `rowMapping` | `string` | `'dataset'` | Element type to which each row is mapped. [more...](#row-mapping)
-| `datasetLabels` | `string` | | Range for dataset labels ([A1 Notation](#a1-notation)). If neither `datasetLabels` nor `data` are specified, the first column or row from the auto-detected range will be selected.
-| `indexLabels` | `string` | | Range for index labels (A1 Notation). If neither `indexLabels` nor `data` are specified, the first row or column from the auto-detected range will be selected.
-| `datapointLabels` | `string` | | Range for property labels for Point objects (A1 Notation). If neither `datapointLabels` nor `data` are specified, the first row from the auto-detected range will be selected. If no data is found, `['_dataset', 'x', 'y', 'r']` will be used. This option is valid only when `rowMapping` is `'datapoint'`.
+| `datasetLabels` | `string` | | Range for dataset labels ([A1 Notation](#a1-notation)). This option is valid when `rowMapping` is `'dataset'` or `'index'`. If neither `datasetLabels` nor `data` are specified, the first column or row from the auto-detected range will be selected.
+| `indexLabels` | `string` | | Range for index labels (A1 Notation). This option is valid when `rowMapping` is `'dataset'` or `'index'`. If neither `indexLabels` nor `data` are specified, the first row or column from the auto-detected range will be selected.
+| `datapointLabels` | `string` | | Range for property labels for Point objects (A1 Notation). This option is valid only when `rowMapping` is `'datapoint'`. If neither `datapointLabels` nor `data` are specified, the first row from the auto-detected range will be selected. If no data is found, `['_dataset', 'x', 'y', 'r']` will be used.
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
 | `data` | `string` | | Range for the data (A1 Notation). If not specified, the range will be detected automatically.
 

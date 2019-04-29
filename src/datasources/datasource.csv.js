@@ -46,17 +46,27 @@ function csvToArrays(str, delimiter) {
 	return arrays;
 }
 
-function getRowHeader(arrays) {
-	var array = arrays.shift() || [];
-
-	return array.map(function(value) {
+function getRowHeader(arrays, hasHeader) {
+	if (!arrays.length) {
+		return [];
+	} else if (!hasHeader) {
+		return Array.apply(null, Array(arrays[0].length)).map(function() {
+			return '';
+		});
+	}
+	return arrays.shift().map(function(value) {
 		return datasourceHelpers.valueOrDefault(value, '');
 	});
 }
 
-function getColumnHeader(arrays) {
+function getColumnHeader(arrays, hasHeader) {
+	if (!hasHeader) {
+		return Array.apply(null, Array(arrays.length)).map(function() {
+			return '';
+		});
+	}
 	return arrays.map(function(array) {
-		return array.shift() || '';
+		return datasourceHelpers.valueOrDefault(array.shift(), '');
 	});
 }
 
@@ -154,34 +164,25 @@ var CsvDataSource = DataSource.extend({
 
 		switch (options.rowMapping) {
 		default:
-			if (options.indexLabels === true) {
-				indexLabels = getRowHeader(arrays);
-			}
+			indexLabels = getRowHeader(arrays, options.indexLabels);
+			datasetLabels = getColumnHeader(arrays, options.datasetLabels);
 			if (options.datasetLabels === true) {
-				if (indexLabels) {
-					indexLabels.shift();
-				}
-				datasetLabels = getColumnHeader(arrays);
+				indexLabels.shift();
 			}
 			data = arrays;
 			break;
 		case 'index':
-			if (options.datasetLabels === true) {
-				datasetLabels = getRowHeader(arrays);
-			}
+			datasetLabels = getRowHeader(arrays, options.datasetLabels);
+			indexLabels = getColumnHeader(arrays, options.indexLabels);
 			if (options.indexLabels === true) {
-				if (datasetLabels) {
-					datasetLabels.shift();
-				}
-				indexLabels = getColumnHeader(arrays);
+				datasetLabels.shift();
 			}
 			data = datasourceHelpers.transpose(arrays);
 			break;
 		case 'datapoint':
 			if (options.datapointLabels === true) {
-				datapointLabels = getRowHeader(arrays);
-			}
-			if (datapointLabels === undefined) {
+				datapointLabels = getRowHeader(arrays, true);
+			} else {
 				datapointLabels = ['_dataset', 'x', 'y', 'r'];
 			}
 			datasetLabels = getLabels(arrays, options.datapointLabelMapping._dataset, datapointLabels);

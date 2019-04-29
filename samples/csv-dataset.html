@@ -101,10 +101,6 @@
 		window.onload = function() {
 			var ctx = document.getElementById('myChart').getContext('2d');
 			window.myChart = new Chart(ctx, config);
-
-			setInterval(function() {
-				window.myChart.update();
-			}, 2000);
 		};
 	</script>
 </body>

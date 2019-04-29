@@ -60,13 +60,29 @@ function query(obj, expr) {
 	return result.length > 1 ? result : result[0];
 }
 
+function getFirstLevelLabels(data) {
+	if (data._labels !== undefined) {
+		return data._labels;
+	}
+	return Array.apply(null, Array(data.length)).map(function() {
+		return '';
+	});
+}
+
 function getSecondLevelLabels(data) {
 	var dataLen = data.length;
 	var array = [];
+	var max = 0;
 	var newArray, labels, labelLen, i, j;
 
 	for (i = 0; i < dataLen; ++i) {
 		Array.prototype.push.apply(array, data[i]._labels);
+		max = Math.max(max, data[i].length);
+	}
+	if (!array.length) {
+		return Array.apply(null, Array(max)).map(function() {
+			return '';
+		});
 	}
 	labels = datasourceHelpers.dedup(array);
 	labelLen = labels.length;
@@ -142,7 +158,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
 			} else if (data) {
-				datasetLabels = data._labels;
+				datasetLabels = getFirstLevelLabels(data);
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
@@ -162,7 +178,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
 			} else if (data) {
-				indexLabels = data._labels;
+				indexLabels = getFirstLevelLabels(data);
 			}
 			data = datasourceHelpers.transpose(data);
 			break;

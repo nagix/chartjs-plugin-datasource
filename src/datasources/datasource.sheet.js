@@ -102,6 +102,15 @@ function getColumnHeader(sheetRange) {
 	});
 }
 
+function formatLabels(labels, length) {
+	var ilen = datasourceHelpers.valueOrDefault(length, labels.length);
+	var i;
+
+	for (i = 0; i < ilen; ++i) {
+		labels[i] = datasourceHelpers.valueOrDefault(labels[i], '');
+	}
+}
+
 function getIndex(value, array, offset) {
 	if (value.match(/^[A-Z]+$/)) {
 		return XLSX.utils.decode_col(value) - offset;
@@ -188,6 +197,8 @@ var SheetDataSource = DataSource.extend({
 				indexLabels = query(parseExpression(workbook, options.indexLabels), true);
 			} else if (detected) {
 				indexLabels = getRowHeader(dataRange);
+			} else {
+				indexLabels = [];
 			}
 			if (options.datasetLabels) {
 				datasetLabels = query(parseExpression(workbook, options.datasetLabels));
@@ -196,14 +207,20 @@ var SheetDataSource = DataSource.extend({
 					indexLabels.shift();
 				}
 				datasetLabels = getColumnHeader(dataRange);
+			} else {
+				datasetLabels = [];
 			}
 			data = query(dataRange);
+			formatLabels(indexLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
+			formatLabels(datasetLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'index':
 			if (options.datasetLabels) {
 				datasetLabels = query(parseExpression(workbook, options.datasetLabels), true);
 			} else if (detected) {
 				datasetLabels = getRowHeader(dataRange);
+			} else {
+				datasetLabels = [];
 			}
 			if (options.indexLabels) {
 				indexLabels = query(parseExpression(workbook, options.indexLabels));
@@ -212,8 +229,12 @@ var SheetDataSource = DataSource.extend({
 					datasetLabels.shift();
 				}
 				indexLabels = getColumnHeader(dataRange);
+			} else {
+				indexLabels = [];
 			}
 			data = query(dataRange, true);
+			formatLabels(datasetLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
+			formatLabels(indexLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'datapoint':
 			if (options.datapointLabels) {

@@ -180,17 +180,27 @@ function csvToArrays(str, delimiter) {
 	return arrays;
 }
 
-function getRowHeader(arrays) {
-	var array = arrays.shift() || [];
-
-	return array.map(function(value) {
+function getRowHeader(arrays, hasHeader) {
+	if (!arrays.length) {
+		return [];
+	} else if (!hasHeader) {
+		return Array.apply(null, Array(arrays[0].length)).map(function() {
+			return '';
+		});
+	}
+	return arrays.shift().map(function(value) {
 		return datasourceHelpers.valueOrDefault(value, '');
 	});
 }
 
-function getColumnHeader(arrays) {
+function getColumnHeader(arrays, hasHeader) {
+	if (!hasHeader) {
+		return Array.apply(null, Array(arrays.length)).map(function() {
+			return '';
+		});
+	}
 	return arrays.map(function(array) {
-		return array.shift() || '';
+		return datasourceHelpers.valueOrDefault(array.shift(), '');
 	});
 }
 
@@ -288,34 +298,25 @@ var CsvDataSource = DataSource.extend({
 
 		switch (options.rowMapping) {
 		default:
-			if (options.indexLabels === true) {
-				indexLabels = getRowHeader(arrays);
-			}
+			indexLabels = getRowHeader(arrays, options.indexLabels);
+			datasetLabels = getColumnHeader(arrays, options.datasetLabels);
 			if (options.datasetLabels === true) {
-				if (indexLabels) {
-					indexLabels.shift();
-				}
-				datasetLabels = getColumnHeader(arrays);
+				indexLabels.shift();
 			}
 			data = arrays;
 			break;
 		case 'index':
-			if (options.datasetLabels === true) {
-				datasetLabels = getRowHeader(arrays);
-			}
+			datasetLabels = getRowHeader(arrays, options.datasetLabels);
+			indexLabels = getColumnHeader(arrays, options.indexLabels);
 			if (options.indexLabels === true) {
-				if (datasetLabels) {
-					datasetLabels.shift();
-				}
-				indexLabels = getColumnHeader(arrays);
+				datasetLabels.shift();
 			}
 			data = datasourceHelpers.transpose(arrays);
 			break;
 		case 'datapoint':
 			if (options.datapointLabels === true) {
-				datapointLabels = getRowHeader(arrays);
-			}
-			if (datapointLabels === undefined) {
+				datapointLabels = getRowHeader(arrays, true);
+			} else {
 				datapointLabels = ['_dataset', 'x', 'y', 'r'];
 			}
 			datasetLabels = getLabels(arrays, options.datapointLabelMapping._dataset, datapointLabels);
@@ -397,13 +398,29 @@ function query(obj, expr) {
 	return result.length > 1 ? result : result[0];
 }
 
+function getFirstLevelLabels(data) {
+	if (data._labels !== undefined) {
+		return data._labels;
+	}
+	return Array.apply(null, Array(data.length)).map(function() {
+		return '';
+	});
+}
+
 function getSecondLevelLabels(data) {
 	var dataLen = data.length;
 	var array = [];
+	var max = 0;
 	var newArray, labels, labelLen, i, j;
 
 	for (i = 0; i < dataLen; ++i) {
 		Array.prototype.push.apply(array, data[i]._labels);
+		max = Math.max(max, data[i].length);
+	}
+	if (!array.length) {
+		return Array.apply(null, Array(max)).map(function() {
+			return '';
+		});
 	}
 	labels = datasourceHelpers.dedup(array);
 	labelLen = labels.length;
@@ -457,13 +474,10 @@ var JsonDataSource = DataSource.extend({
 	_defaultConfig: {
 		type: 'json',
 		rowMapping: 'dataset',
-//		datasetLabels: 'datasets[*].label',
-//		indexLabels: 'labels',
 		datapointLabelMapping: {
 			_dataset: '_dataset',
 			_index: 'x'
-		},
-//		data: 'datasets[*].data'
+		}
 	},
 
 	_responseType: 'json',
@@ -482,7 +496,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
 			} else if (data) {
-				datasetLabels = data._labels;
+				datasetLabels = getFirstLevelLabels(data);
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
@@ -502,7 +516,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
 			} else if (data) {
-				indexLabels = data._labels;
+				indexLabels = getFirstLevelLabels(data);
 			}
 			data = datasourceHelpers.transpose(data);
 			break;
@@ -535,12 +549,10 @@ var JsonLinesDataSource = JsonDataSource.extend({
 	_defaultConfig: {
 		type: 'jsonl',
 		rowMapping: 'index',
-//		indexLabels: '[*].label',
 		datapointLabelMapping: {
 			_dataset: '_dataset',
 			_index: 'x'
-		},
-//		data: '[*].data'
+		}
 	},
 
 	_responseType: 'text',
@@ -651,6 +663,15 @@ function getColumnHeader$1(sheetRange) {
 	});
 }
 
+function formatLabels(labels, length) {
+	var ilen = datasourceHelpers.valueOrDefault(length, labels.length);
+	var i;
+
+	for (i = 0; i < ilen; ++i) {
+		labels[i] = datasourceHelpers.valueOrDefault(labels[i], '');
+	}
+}
+
 function getIndex$1(value, array, offset) {
 	if (value.match(/^[A-Z]+$/)) {
 		return XLSX.utils.decode_col(value) - offset;
@@ -737,6 +758,8 @@ var SheetDataSource = DataSource.extend({
 				indexLabels = query$1(parseExpression(workbook, options.indexLabels), true);
 			} else if (detected) {
 				indexLabels = getRowHeader$1(dataRange);
+			} else {
+				indexLabels = [];
 			}
 			if (options.datasetLabels) {
 				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels));
@@ -745,14 +768,20 @@ var SheetDataSource = DataSource.extend({
 					indexLabels.shift();
 				}
 				datasetLabels = getColumnHeader$1(dataRange);
+			} else {
+				datasetLabels = [];
 			}
 			data = query$1(dataRange);
+			formatLabels(indexLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
+			formatLabels(datasetLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'index':
 			if (options.datasetLabels) {
 				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels), true);
 			} else if (detected) {
 				datasetLabels = getRowHeader$1(dataRange);
+			} else {
+				datasetLabels = [];
 			}
 			if (options.indexLabels) {
 				indexLabels = query$1(parseExpression(workbook, options.indexLabels));
@@ -761,8 +790,12 @@ var SheetDataSource = DataSource.extend({
 					datasetLabels.shift();
 				}
 				indexLabels = getColumnHeader$1(dataRange);
+			} else {
+				indexLabels = [];
 			}
 			data = query$1(dataRange, true);
+			formatLabels(datasetLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
+			formatLabels(indexLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'datapoint':
 			if (options.datapointLabels) {
