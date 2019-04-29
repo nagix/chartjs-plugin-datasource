@@ -9,6 +9,47 @@ var EXPANDO_KEY = '$datasource';
 
 Chart.defaults.global.plugins.datasource = {};
 
+function mergeData(target, source) {
+	var sourceDatasets = source.datasets;
+	var targetDatasets = target.datasets;
+	var sourceLabels = source.labels;
+	var targetLabels = target.labels;
+	var max = 0;
+	var sourceDataset, targetDataset, sourceLabel, sourceData, i, ilen;
+
+	if (helpers.isArray(sourceDatasets)) {
+		if (!helpers.isArray(targetDatasets)) {
+			targetDatasets = target.datasets = [];
+		}
+		for (i = 0, ilen = sourceDatasets.length; i < ilen; ++i) {
+			sourceDataset = sourceDatasets[i];
+			targetDataset = targetDatasets[i];
+			if (!datasourceHelpers.isObject(targetDataset)) {
+				targetDataset = targetDatasets[i] = {};
+			}
+			sourceLabel = sourceDataset.label;
+			if (sourceLabel !== undefined) {
+				targetDataset.label = sourceLabel;
+			} else if (targetDataset.label === undefined) {
+				targetDataset.label = 'Dataset ' + (i + 1);
+			}
+			sourceData = sourceDataset.data;
+			if (helpers.isArray(sourceData)) {
+				targetDataset.data = sourceData;
+				max = Math.max(max, sourceData.length);
+			}
+		}
+	}
+	if (helpers.isArray(sourceLabels)) {
+		target.labels = sourceLabels;
+	} else if (!helpers.isArray(targetLabels) || !targetLabels.length) {
+		targetLabels = target.labels = [];
+		for (i = 0; i < max; ++i) {
+			targetLabels[i] = '' + (i + 1);
+		}
+	}
+}
+
 export default {
 	id: 'datasource',
 
@@ -29,12 +70,7 @@ export default {
 				datasource = expando._datasource = new DataSourceClass(chart, options);
 			}
 			datasource.request(function(response) {
-				chart.data.labels = [];
-				chart.data.datasets.forEach(function(dataset) {
-					dataset.data = [];
-				});
-				datasourceHelpers.merge(chart.data, response.data);
-
+				mergeData(chart.data, response.data);
 				expando._delayed = true;
 				chart.update();
 				delete expando._delayed;

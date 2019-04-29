@@ -60,29 +60,13 @@ function query(obj, expr) {
 	return result.length > 1 ? result : result[0];
 }
 
-function getFirstLevelLabels(data) {
-	if (data._labels !== undefined) {
-		return data._labels;
-	}
-	return Array.apply(null, Array(data.length)).map(function() {
-		return '';
-	});
-}
-
 function getSecondLevelLabels(data) {
 	var dataLen = data.length;
 	var array = [];
-	var max = 0;
 	var newArray, labels, labelLen, i, j;
 
 	for (i = 0; i < dataLen; ++i) {
 		Array.prototype.push.apply(array, data[i]._labels);
-		max = Math.max(max, data[i].length);
-	}
-	if (!array.length) {
-		return Array.apply(null, Array(max)).map(function() {
-			return '';
-		});
 	}
 	labels = datasourceHelpers.dedup(array);
 	labelLen = labels.length;
@@ -158,7 +142,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
 			} else if (data) {
-				datasetLabels = getFirstLevelLabels(data);
+				datasetLabels = data._labels;
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
@@ -178,7 +162,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
 			} else if (data) {
-				indexLabels = getFirstLevelLabels(data);
+				indexLabels = data._labels;
 			}
 			data = datasourceHelpers.transpose(data);
 			break;
@@ -191,6 +175,8 @@ var JsonDataSource = DataSource.extend({
 			break;
 		}
 
+		datasetLabels = datasetLabels || [];
+		data = data || [];
 		for (i = 0, ilen = Math.max(datasetLabels.length, data.length); i < ilen; ++i) {
 			datasets.push({
 				label: datasetLabels[i],

@@ -48,13 +48,13 @@ function parseExpression(workbook, expr) {
 	};
 }
 
-function query(sheetRange, columnOriented) {
+function query(sheetRange, options) {
 	var sheet = sheetRange.sheet;
 	var range = sheetRange.range;
-	var r = columnOriented ? 'c' : 'r';
-	var c = columnOriented ? 'r' : 'c';
+	var r = options && options.columnOriented ? 'c' : 'r';
+	var c = options && options.columnOriented ? 'r' : 'c';
 	var results = [];
-	var result, cellExpr, cell, i, j, ilen, jlen;
+	var result, cellExpr, cell, value, i, j, ilen, jlen;
 
 	if (!sheet) {
 		return results;
@@ -67,7 +67,11 @@ function query(sheetRange, columnOriented) {
 			cellExpr[r] = i;
 			cellExpr[c] = j;
 			cell = sheet[XLSX.utils.encode_cell(cellExpr)] || {};
-			result.push(cell.v);
+			value = cell.v;
+			if (options && options.header) {
+				value = datasourceHelpers.valueOrDefault(value, '');
+			}
+			result.push(value);
 		}
 		results.push(result.length > 1 ? result : result[0]);
 	}
@@ -85,7 +89,10 @@ function getRowHeader(sheetRange) {
 	return query({
 		sheet: sheetRange.sheet,
 		range: range
-	}, true);
+	}, {
+		columnOriented: true,
+		header: true
+	});
 }
 
 function getColumnHeader(sheetRange) {
@@ -99,16 +106,9 @@ function getColumnHeader(sheetRange) {
 	return query({
 		sheet: sheetRange.sheet,
 		range: range
+	}, {
+		header: true
 	});
-}
-
-function formatLabels(labels, length) {
-	var ilen = datasourceHelpers.valueOrDefault(length, labels.length);
-	var i;
-
-	for (i = 0; i < ilen; ++i) {
-		labels[i] = datasourceHelpers.valueOrDefault(labels[i], '');
-	}
 }
 
 function getIndex(value, array, offset) {
@@ -126,6 +126,8 @@ function getLables(sheetRange, value, datapointLabels) {
 	return datasourceHelpers.dedup(query({
 		sheet: sheetRange.sheet,
 		range: range
+	}, {
+		header: true
 	}));
 }
 
@@ -194,51 +196,39 @@ var SheetDataSource = DataSource.extend({
 		switch (options.rowMapping) {
 		default:
 			if (options.indexLabels) {
-				indexLabels = query(parseExpression(workbook, options.indexLabels), true);
+				indexLabels = query(parseExpression(workbook, options.indexLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				indexLabels = getRowHeader(dataRange);
-			} else {
-				indexLabels = [];
 			}
 			if (options.datasetLabels) {
-				datasetLabels = query(parseExpression(workbook, options.datasetLabels));
+				datasetLabels = query(parseExpression(workbook, options.datasetLabels), {header: true});
 			} else if (detected) {
 				if (indexLabels) {
 					indexLabels.shift();
 				}
 				datasetLabels = getColumnHeader(dataRange);
-			} else {
-				datasetLabels = [];
 			}
 			data = query(dataRange);
-			formatLabels(indexLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
-			formatLabels(datasetLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'index':
 			if (options.datasetLabels) {
-				datasetLabels = query(parseExpression(workbook, options.datasetLabels), true);
+				datasetLabels = query(parseExpression(workbook, options.datasetLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				datasetLabels = getRowHeader(dataRange);
-			} else {
-				datasetLabels = [];
 			}
 			if (options.indexLabels) {
-				indexLabels = query(parseExpression(workbook, options.indexLabels));
+				indexLabels = query(parseExpression(workbook, options.indexLabels), {header: true});
 			} else if (detected) {
 				if (datasetLabels) {
 					datasetLabels.shift();
 				}
 				indexLabels = getColumnHeader(dataRange);
-			} else {
-				indexLabels = [];
 			}
-			data = query(dataRange, true);
-			formatLabels(datasetLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
-			formatLabels(indexLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
+			data = query(dataRange, {columnOriented: true});
 			break;
 		case 'datapoint':
 			if (options.datapointLabels) {
-				datapointLabels = query(parseExpression(workbook, options.datapointLabels), true);
+				datapointLabels = query(parseExpression(workbook, options.datapointLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				datapointLabels = getRowHeader(dataRange);
 			}
@@ -252,6 +242,8 @@ var SheetDataSource = DataSource.extend({
 			break;
 		}
 
+		datasetLabels = datasetLabels || [];
+		data = data || [];
 		for (i = 0, ilen = Math.max(datasetLabels.length, data.length); i < ilen; ++i) {
 			datasets.push({
 				label: datasetLabels[i],

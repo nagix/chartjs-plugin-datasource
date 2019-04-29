@@ -81,32 +81,6 @@ var datasourceHelpers = {
 	// For Chart.js 2.6.0 backward compatibility
 	valueOrDefault: helpers$1.valueOrDefault || helpers$1.getValueOrDefault,
 
-	merge: function(target, source) {
-		var keys, key, i, ilen;
-
-		if (helpers$1.isArray(source)) {
-			if (!helpers$1.isArray(target)) {
-				target = [];
-			}
-			for (i = 0, ilen = source.length; i < ilen; ++i) {
-				target[i] = datasourceHelpers.merge(target[i], source[i]);
-			}
-		} else if (datasourceHelpers.isObject(source)) {
-			if (!datasourceHelpers.isObject(target)) {
-				target = {};
-			}
-			keys = Object.keys(source);
-			for (i = 0, ilen = keys.length; i < ilen; ++i) {
-				key = keys[i];
-				target[key] = datasourceHelpers.merge(target[key], source[key]);
-			}
-		} else {
-			target = source;
-		}
-
-		return target;
-	},
-
 	getExtension: function(url) {
 		var matches = url.match(/\.([0-9a-z]+)(?:[?#]|$)/i);
 
@@ -180,25 +154,15 @@ function csvToArrays(str, delimiter) {
 	return arrays;
 }
 
-function getRowHeader(arrays, hasHeader) {
-	if (!arrays.length) {
-		return [];
-	} else if (!hasHeader) {
-		return Array.apply(null, Array(arrays[0].length)).map(function() {
-			return '';
-		});
-	}
-	return arrays.shift().map(function(value) {
+function getRowHeader(arrays) {
+	var array = arrays.shift() || [];
+
+	return array.map(function(value) {
 		return datasourceHelpers.valueOrDefault(value, '');
 	});
 }
 
-function getColumnHeader(arrays, hasHeader) {
-	if (!hasHeader) {
-		return Array.apply(null, Array(arrays.length)).map(function() {
-			return '';
-		});
-	}
+function getColumnHeader(arrays) {
 	return arrays.map(function(array) {
 		return datasourceHelpers.valueOrDefault(array.shift(), '');
 	});
@@ -298,25 +262,34 @@ var CsvDataSource = DataSource.extend({
 
 		switch (options.rowMapping) {
 		default:
-			indexLabels = getRowHeader(arrays, options.indexLabels);
-			datasetLabels = getColumnHeader(arrays, options.datasetLabels);
+			if (options.indexLabels === true) {
+				indexLabels = getRowHeader(arrays);
+			}
 			if (options.datasetLabels === true) {
-				indexLabels.shift();
+				if (indexLabels) {
+					indexLabels.shift();
+				}
+				datasetLabels = getColumnHeader(arrays);
 			}
 			data = arrays;
 			break;
 		case 'index':
-			datasetLabels = getRowHeader(arrays, options.datasetLabels);
-			indexLabels = getColumnHeader(arrays, options.indexLabels);
+			if (options.datasetLabels === true) {
+				datasetLabels = getRowHeader(arrays);
+			}
 			if (options.indexLabels === true) {
-				datasetLabels.shift();
+				if (datasetLabels) {
+					datasetLabels.shift();
+				}
+				indexLabels = getColumnHeader(arrays);
 			}
 			data = datasourceHelpers.transpose(arrays);
 			break;
 		case 'datapoint':
 			if (options.datapointLabels === true) {
-				datapointLabels = getRowHeader(arrays, true);
-			} else {
+				datapointLabels = getRowHeader(arrays);
+			}
+			if (datapointLabels === undefined) {
 				datapointLabels = ['_dataset', 'x', 'y', 'r'];
 			}
 			datasetLabels = getLabels(arrays, options.datapointLabelMapping._dataset, datapointLabels);
@@ -326,7 +299,8 @@ var CsvDataSource = DataSource.extend({
 			break;
 		}
 
-		for (i = 0, ilen = datasetLabels.length; i < ilen; ++i) {
+		datasetLabels = datasetLabels || [];
+		for (i = 0, ilen = data.length; i < ilen; ++i) {
 			datasets.push({
 				label: datasetLabels[i],
 				data: data[i]
@@ -398,29 +372,13 @@ function query(obj, expr) {
 	return result.length > 1 ? result : result[0];
 }
 
-function getFirstLevelLabels(data) {
-	if (data._labels !== undefined) {
-		return data._labels;
-	}
-	return Array.apply(null, Array(data.length)).map(function() {
-		return '';
-	});
-}
-
 function getSecondLevelLabels(data) {
 	var dataLen = data.length;
 	var array = [];
-	var max = 0;
 	var newArray, labels, labelLen, i, j;
 
 	for (i = 0; i < dataLen; ++i) {
 		Array.prototype.push.apply(array, data[i]._labels);
-		max = Math.max(max, data[i].length);
-	}
-	if (!array.length) {
-		return Array.apply(null, Array(max)).map(function() {
-			return '';
-		});
 	}
 	labels = datasourceHelpers.dedup(array);
 	labelLen = labels.length;
@@ -496,7 +454,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
 			} else if (data) {
-				datasetLabels = getFirstLevelLabels(data);
+				datasetLabels = data._labels;
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
@@ -516,7 +474,7 @@ var JsonDataSource = DataSource.extend({
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
 			} else if (data) {
-				indexLabels = getFirstLevelLabels(data);
+				indexLabels = data._labels;
 			}
 			data = datasourceHelpers.transpose(data);
 			break;
@@ -529,6 +487,8 @@ var JsonDataSource = DataSource.extend({
 			break;
 		}
 
+		datasetLabels = datasetLabels || [];
+		data = data || [];
 		for (i = 0, ilen = Math.max(datasetLabels.length, data.length); i < ilen; ++i) {
 			datasets.push({
 				label: datasetLabels[i],
@@ -609,13 +569,13 @@ function parseExpression(workbook, expr) {
 	};
 }
 
-function query$1(sheetRange, columnOriented) {
+function query$1(sheetRange, options) {
 	var sheet = sheetRange.sheet;
 	var range = sheetRange.range;
-	var r = columnOriented ? 'c' : 'r';
-	var c = columnOriented ? 'r' : 'c';
+	var r = options && options.columnOriented ? 'c' : 'r';
+	var c = options && options.columnOriented ? 'r' : 'c';
 	var results = [];
-	var result, cellExpr, cell, i, j, ilen, jlen;
+	var result, cellExpr, cell, value, i, j, ilen, jlen;
 
 	if (!sheet) {
 		return results;
@@ -628,7 +588,11 @@ function query$1(sheetRange, columnOriented) {
 			cellExpr[r] = i;
 			cellExpr[c] = j;
 			cell = sheet[XLSX.utils.encode_cell(cellExpr)] || {};
-			result.push(cell.v);
+			value = cell.v;
+			if (options && options.header) {
+				value = datasourceHelpers.valueOrDefault(value, '');
+			}
+			result.push(value);
 		}
 		results.push(result.length > 1 ? result : result[0]);
 	}
@@ -646,7 +610,10 @@ function getRowHeader$1(sheetRange) {
 	return query$1({
 		sheet: sheetRange.sheet,
 		range: range
-	}, true);
+	}, {
+		columnOriented: true,
+		header: true
+	});
 }
 
 function getColumnHeader$1(sheetRange) {
@@ -660,16 +627,9 @@ function getColumnHeader$1(sheetRange) {
 	return query$1({
 		sheet: sheetRange.sheet,
 		range: range
+	}, {
+		header: true
 	});
-}
-
-function formatLabels(labels, length) {
-	var ilen = datasourceHelpers.valueOrDefault(length, labels.length);
-	var i;
-
-	for (i = 0; i < ilen; ++i) {
-		labels[i] = datasourceHelpers.valueOrDefault(labels[i], '');
-	}
 }
 
 function getIndex$1(value, array, offset) {
@@ -687,6 +647,8 @@ function getLables(sheetRange, value, datapointLabels) {
 	return datasourceHelpers.dedup(query$1({
 		sheet: sheetRange.sheet,
 		range: range
+	}, {
+		header: true
 	}));
 }
 
@@ -755,51 +717,39 @@ var SheetDataSource = DataSource.extend({
 		switch (options.rowMapping) {
 		default:
 			if (options.indexLabels) {
-				indexLabels = query$1(parseExpression(workbook, options.indexLabels), true);
+				indexLabels = query$1(parseExpression(workbook, options.indexLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				indexLabels = getRowHeader$1(dataRange);
-			} else {
-				indexLabels = [];
 			}
 			if (options.datasetLabels) {
-				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels));
+				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels), {header: true});
 			} else if (detected) {
 				if (indexLabels) {
 					indexLabels.shift();
 				}
 				datasetLabels = getColumnHeader$1(dataRange);
-			} else {
-				datasetLabels = [];
 			}
 			data = query$1(dataRange);
-			formatLabels(indexLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
-			formatLabels(datasetLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
 			break;
 		case 'index':
 			if (options.datasetLabels) {
-				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels), true);
+				datasetLabels = query$1(parseExpression(workbook, options.datasetLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				datasetLabels = getRowHeader$1(dataRange);
-			} else {
-				datasetLabels = [];
 			}
 			if (options.indexLabels) {
-				indexLabels = query$1(parseExpression(workbook, options.indexLabels));
+				indexLabels = query$1(parseExpression(workbook, options.indexLabels), {header: true});
 			} else if (detected) {
 				if (datasetLabels) {
 					datasetLabels.shift();
 				}
 				indexLabels = getColumnHeader$1(dataRange);
-			} else {
-				indexLabels = [];
 			}
-			data = query$1(dataRange, true);
-			formatLabels(datasetLabels, dataRange.range.e.c - dataRange.range.s.c + 1);
-			formatLabels(indexLabels, dataRange.range.e.r - dataRange.range.s.r + 1);
+			data = query$1(dataRange, {columnOriented: true});
 			break;
 		case 'datapoint':
 			if (options.datapointLabels) {
-				datapointLabels = query$1(parseExpression(workbook, options.datapointLabels), true);
+				datapointLabels = query$1(parseExpression(workbook, options.datapointLabels), {columnOriented: true, header: true});
 			} else if (detected) {
 				datapointLabels = getRowHeader$1(dataRange);
 			}
@@ -813,6 +763,8 @@ var SheetDataSource = DataSource.extend({
 			break;
 		}
 
+		datasetLabels = datasetLabels || [];
+		data = data || [];
 		for (i = 0, ilen = Math.max(datasetLabels.length, data.length); i < ilen; ++i) {
 			datasets.push({
 				label: datasetLabels[i],
@@ -846,6 +798,47 @@ var EXPANDO_KEY = '$datasource';
 
 Chart.defaults.global.plugins.datasource = {};
 
+function mergeData(target, source) {
+	var sourceDatasets = source.datasets;
+	var targetDatasets = target.datasets;
+	var sourceLabels = source.labels;
+	var targetLabels = target.labels;
+	var max = 0;
+	var sourceDataset, targetDataset, sourceLabel, sourceData, i, ilen;
+
+	if (helpers$5.isArray(sourceDatasets)) {
+		if (!helpers$5.isArray(targetDatasets)) {
+			targetDatasets = target.datasets = [];
+		}
+		for (i = 0, ilen = sourceDatasets.length; i < ilen; ++i) {
+			sourceDataset = sourceDatasets[i];
+			targetDataset = targetDatasets[i];
+			if (!datasourceHelpers.isObject(targetDataset)) {
+				targetDataset = targetDatasets[i] = {};
+			}
+			sourceLabel = sourceDataset.label;
+			if (sourceLabel !== undefined) {
+				targetDataset.label = sourceLabel;
+			} else if (targetDataset.label === undefined) {
+				targetDataset.label = 'Dataset ' + (i + 1);
+			}
+			sourceData = sourceDataset.data;
+			if (helpers$5.isArray(sourceData)) {
+				targetDataset.data = sourceData;
+				max = Math.max(max, sourceData.length);
+			}
+		}
+	}
+	if (helpers$5.isArray(sourceLabels)) {
+		target.labels = sourceLabels;
+	} else if (!helpers$5.isArray(targetLabels) || !targetLabels.length) {
+		targetLabels = target.labels = [];
+		for (i = 0; i < max; ++i) {
+			targetLabels[i] = '' + (i + 1);
+		}
+	}
+}
+
 var DataSourcePlugin = {
 	id: 'datasource',
 
@@ -866,12 +859,7 @@ var DataSourcePlugin = {
 				datasource = expando._datasource = new DataSourceClass(chart, options);
 			}
 			datasource.request(function(response) {
-				chart.data.labels = [];
-				chart.data.datasets.forEach(function(dataset) {
-					dataset.data = [];
-				});
-				datasourceHelpers.merge(chart.data, response.data);
-
+				mergeData(chart.data, response.data);
 				expando._delayed = true;
 				chart.update();
 				delete expando._delayed;
