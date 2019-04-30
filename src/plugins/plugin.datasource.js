@@ -98,6 +98,9 @@ export default {
 	},
 
 	getConstructor: function(type) {
-		return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
+		if (!this.constructors.hasOwnProperty(type)) {
+			throw new Error('"' + type + '" is not a data source type.');
+		}
+		return this.constructors[type];
 	}
 };

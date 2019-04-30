@@ -705,6 +705,13 @@ var SheetDataSource = DataSource.extend({
 
 	_responseType: 'arraybuffer',
 
+	initialize: function() {
+		if (!XLSX) {
+			throw new Error('XLSX is not found. Please load the xlsx library before loading this plugin.');
+		}
+		DataSource.prototype.initialize.apply(this, arguments);
+	},
+
 	convert: function(input) {
 		var me = this;
 		var options = me._options;
@@ -887,7 +894,10 @@ var DataSourcePlugin = {
 	},
 
 	getConstructor: function(type) {
-		return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
+		if (!this.constructors.hasOwnProperty(type)) {
+			throw new Error('"' + type + '" is not a data source type.');
+		}
+		return this.constructors[type];
 	}
 };
 

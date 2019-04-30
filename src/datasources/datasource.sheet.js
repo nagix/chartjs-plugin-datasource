@@ -184,6 +184,13 @@ var SheetDataSource = DataSource.extend({
 
 	_responseType: 'arraybuffer',
 
+	initialize: function() {
+		if (!XLSX) {
+			throw new Error('XLSX is not found. Please load the xlsx library before loading this plugin.');
+		}
+		DataSource.prototype.initialize.apply(this, arguments);
+	},
+
 	convert: function(input) {
 		var me = this;
 		var options = me._options;
