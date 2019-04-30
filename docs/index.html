@@ -14,7 +14,7 @@
     <meta name="twitter:site" content="@nagix" />
     <meta name="theme-color" content="#ffffff">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/xlsx@0.14.2/dist/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/xlsx@0.14.3/dist/xlsx.full.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-deferred@1.0.1"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/nagix/chartjs-plugin-datasource@master/dist/chartjs-plugin-datasource.js"></script>
   <style>
@@ -41,6 +41,22 @@
       }
       .text-right {
         text-align: right;
+      }
+      .border-top {
+        border-top-color: #ff0000;
+        border-top-width: 3px;
+      }
+      .border-right {
+        border-right-color: #ff0000;
+        border-right-width: 3px;
+      }
+      .border-bottom {
+        border-bottom-color: #ff0000;
+        border-bottom-width: 3px;
+      }
+      .border-left {
+        border-left-color: #ff0000;
+        border-left-width: 3px;
       }
     </style>
   </head>
@@ -292,7 +308,7 @@
 
         <li>
           <h4>How to load datapoint-mapped row data</h4>
-          <p>Data might be in form of <a href="http://vita.had.co.nz/papers/tidy-data.pdf">Tidy Data</a>.<br />You can load <a href="samples/sample-datapoint.xlsx">this type of data</a> by setting rowMapping option to 'datapoint'.<br />The first row will be used as property names for Point objects.</p>
+          <p>Data might be in form of <a href="http://vita.had.co.nz/papers/tidy-data.pdf">Tidy Data</a>. You can load <a href="samples/sample-datapoint.xlsx">this type of data</a><br />by setting the rowMapping option to 'datapoint'. The first row will be<br />used as datapoint labels, and you can use the datapointLabelMapping<br />option to map the labels to property names for Point objects.</p>
           <table>
             <thead>
               <tr>
@@ -422,6 +438,81 @@
         </li>
 
         <li>
+          <h4>Select a range</h4>
+          <p>If you want to use only a part of cells in a spreadsheet,<br />you can select a range using A1 notation.</p>
+          <table>
+            <thead>
+              <tr>
+                <th class="col-header"></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+                <th>E</th>
+                <th>F</th>
+                <th>G</th>
+                <th>H</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="col-header">1</th>
+                <td></td>
+                <td>January</td>
+                <td>February</td>
+                <td class="border-top border-left border-bottom">March</td>
+                <td class="border-top border-bottom">April</td>
+                <td class="border-top border-bottom">May</td>
+                <td class="border-top border-right border-bottom">June</td>
+                <td>July</td>
+              </tr>
+              <tr>
+                <th class="col-header">2</th>
+                <td class="border-top border-right border-left">Temperature</td>
+                <td class="text-right">7</td>
+                <td class="text-right">7</td>
+                <td class="text-right border-top border-left">10</td>
+                <td class="text-right border-top">15</td>
+                <td class="text-right border-top">20</td>
+                <td class="text-right border-top border-right">23</td>
+                <td class="text-right">26</td>
+              </tr>
+              <tr>
+                <th class="col-header">3</th>
+                <td class="border-right border-bottom border-left">Precipitation</td>
+                <td class="text-right">8.1</td>
+                <td class="text-right">14.9</td>
+                <td class="text-right border-bottom border-left">41.0</td>
+                <td class="text-right border-bottom">31.4</td>
+                <td class="text-right border-bottom">42.6</td>
+                <td class="text-right border-bottom border-right">57.5</td>
+                <td class="text-right">36.0</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-dataset.xlsx',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasetLabels: 'Sheet1!A2:A3',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;indexLabels: 'Sheet1!D1:G1',
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: 'Sheet1!D2:G3'
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart5"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
           <h4>...and you're done!</h4>
           <p>See also <a href="https://github.com/nagix/chartjs-plugin-datasource">GitHub repository</a> and <a href="./samples">samples</a></p>
           <div class="hero-octicon">
@@ -458,16 +549,14 @@
         }] },
         plugins: [ChartDataSource],
         options: {
-          scales: {
-            yAxes: [{
-              id: 'temperature',
-              gridLines: { drawOnChartArea: false }
-            }, {
-              id: 'precipitation',
-              position: 'right',
-              gridLines: { drawOnChartArea: false }
-            }]
-          },
+          scales: { yAxes: [{
+            id: 'temperature',
+            gridLines: { drawOnChartArea: false }
+          }, {
+            id: 'precipitation',
+            position: 'right',
+            gridLines: { drawOnChartArea: false }
+          }] },
           plugins: { datasource: { url: 'samples/sample-dataset.xlsx' } },
         }
       });
@@ -490,16 +579,14 @@
         }] },
         plugins: [ChartDataSource],
         options: {
-          scales: {
-            yAxes: [{
-              id: 'temperature',
-              gridLines: { drawOnChartArea: false }
-            }, {
-              id: 'precipitation',
-              position: 'right',
-              gridLines: { drawOnChartArea: false }
-            }]
-          },
+          scales: { yAxes: [{
+            id: 'temperature',
+            gridLines: { drawOnChartArea: false }
+          }, {
+            id: 'precipitation',
+            position: 'right',
+            gridLines: { drawOnChartArea: false }
+          }] },
           plugins: { datasource: {
             url: 'samples/sample-index.xlsx',
             rowMapping: 'index'
@@ -525,16 +612,14 @@
         }] },
         plugins: [ChartDataSource],
         options: {
-          scales: {
-            yAxes: [{
-              id: 'temperature',
-              gridLines: { drawOnChartArea: false }
-            }, {
-              id: 'precipitation',
-              position: 'right',
-              gridLines: { drawOnChartArea: false }
-            }]
-          },
+          scales: { yAxes: [{
+            id: 'temperature',
+            gridLines: { drawOnChartArea: false }
+          }, {
+            id: 'precipitation',
+            position: 'right',
+            gridLines: { drawOnChartArea: false }
+          }] },
           plugins: { datasource: {
             url: 'samples/sample-datapoint.xlsx',
             rowMapping: 'datapoint',
@@ -546,6 +631,41 @@
             },
           } },
         }
+      });
+
+      var ctx5 = document.getElementById('chart5').getContext('2d');
+      var chart5 = new Chart(ctx5, {
+        type: 'bar',
+        data: { datasets: [{
+          type: 'line',
+          yAxisID: 'temperature',
+          backgroundColor: 'transparent',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          tension: 0,
+          fill: false
+        }, {
+          yAxisID: 'precipitation',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'transparent'
+        }] },
+        plugins: [ChartDataSource],
+        options: {
+          scales: { yAxes: [{
+            id: 'temperature',
+            gridLines: { drawOnChartArea: false }
+          }, {
+            id: 'precipitation',
+            position: 'right',
+            gridLines: { drawOnChartArea: false }
+          }] },
+          plugins: { datasource: {
+            url: 'samples/sample-dataset.xlsx',
+            datasetLabels: 'Sheet1!A2:A3',
+            indexLabels: 'Sheet1!D1:G1',
+            data: 'Sheet1!D2:G3'
+          }
+        } }
       });
     </script>
     <footer class="page-footer">
