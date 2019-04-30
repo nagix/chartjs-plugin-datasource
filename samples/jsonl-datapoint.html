@@ -55,7 +55,7 @@
 			options: {
 				title: {
 					display: true,
-					text: 'JSON data source (index) sample'
+					text: 'JSON Lines data source (datapoint) sample'
 				},
 				scales: {
 					xAxes: [{
@@ -87,12 +87,16 @@
 				},
 				plugins: {
 					datasource: {
-						type: 'json',
-						url: 'sample-index.json',
-						rowMapping: 'index',
-						datasetLabels: 'labels',
-						indexLabels: 'indices[*].label',
-						data: 'indices[*].data'
+						type: 'jsonl',
+						url: 'sample-datapoint.jsonl',
+						rowMapping: 'datapoint',
+						datapointLabelMapping: {
+							_dataset: 'dataset',
+							_index: 'month',
+							x: 'month',
+							y: 'value'
+						},
+						data: '*.*'
 					}
 				}
 			}

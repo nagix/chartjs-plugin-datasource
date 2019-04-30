@@ -34,7 +34,7 @@
 				<a class="nav-link active" id="js-tab" data-toggle="tab" href="#js" role="tab" aria-controls="js" aria-selected="true">JavaScript</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" id="json-tab" data-toggle="tab" href="#json" role="tab" aria-controls="json" aria-selected="false">JSON</a>
+				<a class="nav-link" id="jsonl-tab" data-toggle="tab" href="#jsonl" role="tab" aria-controls="jsonl" aria-selected="false">JSON Lines</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
@@ -69,7 +69,7 @@ var config = {
 	options: {
 		title: {
 			display: true,
-			text: 'JSON data source (index) sample'
+			text: 'JSON Lines data source (index) sample'
 		},
 		scales: {
 			xAxes: [{
@@ -101,12 +101,11 @@ var config = {
 		},
 		plugins: {
 			datasource: {
-				type: 'json',
-				url: 'sample-index.json',
+				type: 'jsonl',
+				url: 'sample-index.jsonl',
 				rowMapping: 'index',
-				datasetLabels: 'labels',
-				indexLabels: 'indices[*].label',
-				data: 'indices[*].data'
+				indexLabels: '*.label',
+				data: '*.data.*'
 			}
 		}
 	}
@@ -117,32 +116,14 @@ window.onload = function() {
 	window.myChart = new Chart(ctx, config);
 };</pre>
 			</div>
-			<div class="tab-pane fade" id="json" role="tabpanel" aria-labelledby="json-tab">
-				<pre class="prettyprint lang-json p-3 bg-light">{
-	"labels": ["Temperature", "Precipitation"],
-	"indices": [{
-		"label": "January",
-		"data": [7, 8.1]
-	}, {
-		"label": "February",
-		"data": [7, 14.9]
-	}, {
-		"label": "March",
-		"data": [10, 41.0]
-	}, {
-		"label": "April",
-		"data": [15, 31.4]
-	}, {
-		"label": "May",
-		"data": [20, 42.6]
-	}, {
-		"label": "June",
-		"data": [23, 57.5]
-	}, {
-		"label": "July",
-		"data": [26, 36.0]
-	}]
-}</pre>
+			<div class="tab-pane fade" id="jsonl" role="tabpanel" aria-labelledby="jsonl-tab">
+				<pre class="prettyprint lang-json p-3 bg-light">{"label": "January", "data": {"Temperature": 7, "Precipitation": 8.1}}
+{"label": "February", "data": {"Temperature": 7, "Precipitation": 14.9}}
+{"label": "March", "data": {"Temperature": 10, "Precipitation": 41.0}}
+{"label": "April", "data": {"Temperature": 15, "Precipitation": 31.4}}
+{"label": "May", "data": {"Temperature": 20, "Precipitation": 42.6}}
+{"label": "June", "data": {"Temperature": 23, "Precipitation": 57.5}}
+{"label": "July", "data": {"Temperature": 26, "Precipitation": 36.0}}</pre>
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
 				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
@@ -186,7 +167,7 @@ window.onload = function() {
 			options: {
 				title: {
 					display: true,
-					text: 'JSON data source (index) sample'
+					text: 'JSON Lines data source (index) sample'
 				},
 				scales: {
 					xAxes: [{
@@ -218,12 +199,11 @@ window.onload = function() {
 				},
 				plugins: {
 					datasource: {
-						type: 'json',
-						url: 'sample-index.json',
+						type: 'jsonl',
+						url: 'sample-index.jsonl',
 						rowMapping: 'index',
-						datasetLabels: 'labels',
-						indexLabels: 'indices[*].label',
-						data: 'indices[*].data'
+						indexLabels: '*.label',
+						data: '*.data.*'
 					}
 				}
 			}

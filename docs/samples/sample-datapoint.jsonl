@@ -1,0 +1,14 @@
+{"dataset": "Temperature", "month": "January", "value": 7}
+{"dataset": "Temperature", "month": "February", "value": 7}
+{"dataset": "Temperature", "month": "March", "value": 10}
+{"dataset": "Temperature", "month": "April", "value": 15}
+{"dataset": "Temperature", "month": "May", "value": 20}
+{"dataset": "Temperature", "month": "June", "value": 23}
+{"dataset": "Temperature", "month": "July", "value": 26}
+{"dataset": "Precipitation", "month": "January", "value": 8.1}
+{"dataset": "Precipitation", "month": "February", "value": 14.9}
+{"dataset": "Precipitation", "month": "March", "value": 41.0}
+{"dataset": "Precipitation", "month": "April", "value": 31.4}
+{"dataset": "Precipitation", "month": "May", "value": 42.6}
+{"dataset": "Precipitation", "month": "June", "value": 57.5}
+{"dataset": "Precipitation", "month": "July", "value": 36.0}

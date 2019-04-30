@@ -1,6 +1,6 @@
 {
 	"labels": ["Temperature", "Precipitation"],
-	"datasets": [{
+	"indices": [{
 		"label": "January",
 		"data": [7, 8.1]
 	}, {
