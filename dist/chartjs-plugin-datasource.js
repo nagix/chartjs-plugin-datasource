@@ -393,12 +393,24 @@ function getSecondLevelLabels(data) {
 	return labels;
 }
 
-function getPointData$1(array, datasetLabels, datapointLabelMapping) {
+function getLabels$1(arrays, value) {
+	var result = [];
+	var array, labels, i, ilen;
+
+	for (i = 0, ilen = arrays.length; i < ilen; ++i) {
+		array = arrays[i];
+		labels = array._labels;
+		result.push(arrays[i][labels ? labels.indexOf(value) : value]);
+	}
+	return datasourceHelpers.dedup(result);
+}
+
+function getPointData$1(arrays, datasetLabels, datapointLabelMapping) {
 	var keys = Object.keys(datapointLabelMapping);
 	var datapointLabelLookup = {};
 	var datasetLabelLookup = {};
 	var result = [];
-	var key, obj, newObj, datapointLabel, datapointValue, i, j, ilen, jlen;
+	var array, labels, obj, key, datapointLabel, datapointValue, i, j, ilen, jlen;
 
 	for (i = 0, ilen = keys.length; i < ilen; ++i) {
 		key = keys[i];
@@ -410,18 +422,18 @@ function getPointData$1(array, datasetLabels, datapointLabelMapping) {
 		datasetLabelLookup[datasetLabels[i]] = i;
 		result[i] = [];
 	}
-	for (i = 0, ilen = array.length; i < ilen; ++i) {
-		obj = array[i];
-		keys = Object.keys(obj);
-		newObj = {};
-		for (j = 0, jlen = keys.length; j < jlen; ++j) {
-			key = keys[j];
-			datapointLabel = datapointLabelLookup[key] || key;
-			datapointValue = obj[key];
+	for (i = 0, ilen = arrays.length; i < ilen; ++i) {
+		array = arrays[i];
+		labels = array._labels;
+		obj = {};
+		for (j = 0, jlen = array.length; j < jlen; ++j) {
+			key = labels ? labels[j] : j;
+			datapointLabel = datasourceHelpers.valueOrDefault(datapointLabelLookup[key], key);
+			datapointValue = array[j];
 			if (datapointLabel === '_dataset') {
-				result[datasetLabelLookup[datapointValue]].push(newObj);
+				result[datasetLabelLookup[datapointValue]].push(obj);
 			} else {
-				newObj[datapointLabel] = datapointValue;
+				obj[datapointLabel] = datapointValue;
 			}
 		}
 	}
@@ -444,45 +456,46 @@ var JsonDataSource = DataSource.extend({
 		var me = this;
 		var options = me._options;
 		var datasets = [];
-		var datasetLabels, indexLabels, data, i, ilen;
+		var datasetLabels, indexLabels, data, arrays, i, ilen;
+
+		if (options.data) {
+			arrays = query(input, options.data);
+		}
 
 		switch (options.rowMapping) {
 		default:
-			if (options.data) {
-				data = query(input, options.data);
-			}
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
-			} else if (data) {
-				datasetLabels = data._labels;
+			} else if (arrays) {
+				datasetLabels = arrays._labels;
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
-			} else if (data) {
-				indexLabels = getSecondLevelLabels(data);
+			} else if (arrays) {
+				indexLabels = getSecondLevelLabels(arrays);
 			}
+			data = arrays;
 			break;
 		case 'index':
-			if (options.data) {
-				data = query(input, options.data);
-			}
 			if (options.datasetLabels) {
 				datasetLabels = query(input, options.datasetLabels);
-			} else if (data) {
-				datasetLabels = getSecondLevelLabels(data);
+			} else if (arrays) {
+				datasetLabels = getSecondLevelLabels(arrays);
 			}
 			if (options.indexLabels) {
 				indexLabels = query(input, options.indexLabels);
-			} else if (data) {
-				indexLabels = data._labels;
+			} else if (arrays) {
+				indexLabels = arrays._labels;
 			}
-			data = datasourceHelpers.transpose(data);
+			if (arrays) {
+				data = datasourceHelpers.transpose(arrays);
+			}
 			break;
 		case 'datapoint':
-			if (options.data) {
-				datasetLabels = datasourceHelpers.dedup(query(input, options.data + '.' + options.datapointLabelMapping._dataset));
-				indexLabels = datasourceHelpers.dedup(query(input, options.data + '.' + options.datapointLabelMapping._index));
-				data = getPointData$1(query(input, options.data), datasetLabels, options.datapointLabelMapping);
+			if (arrays) {
+				datasetLabels = getLabels$1(arrays, options.datapointLabelMapping._dataset);
+				indexLabels = getLabels$1(arrays, options.datapointLabelMapping._index);
+				data = getPointData$1(arrays, datasetLabels, options.datapointLabelMapping);
 			}
 			break;
 		}
