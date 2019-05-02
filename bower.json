@@ -1,0 +1,15 @@
+{
+  "name": "chartjs-plugin-datasource",
+  "description": "Chart.js plugin for automatic data loading",
+  "homepage": "https://nagix.github.io/chartjs-plugin-datasource",
+  "license": "MIT",
+  "version": "0.1.0",
+  "main": "dist/chartjs-plugin-datasource.js",
+  "ignore": [
+    ".codeclimate.yml",
+    ".gitignore",
+    ".npmignore",
+    ".travis.yml",
+    "scripts"
+  ]
+}
