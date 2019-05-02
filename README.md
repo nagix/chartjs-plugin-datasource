@@ -124,7 +124,7 @@ The JSON data source supports JSON data. The following options are available in 
 | `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
-| `data` | `string` | | Simplified JSONPath expression for a two-dimension array of the data. [more...](#simplified-jsonpath)
+| `data` | `string` | | Simplified JSONPath expression for a two-dimensional array of the data. [more...](#simplified-jsonpath)
 
 ### JSON Lines Data Source
 
@@ -136,11 +136,11 @@ The JSON Lines data source supports [JSON Lines](http://jsonlines.org) data. The
 | `datasetLabels` | `string` | | [Simplified JSONPath](#simplified-jsonpath) expression for an array of the dataset labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of a dataset label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `indexLabels` | `string` | | Simplified JSONPath expression for an array of the index labels. This option is valid when `rowMapping` is `'dataset'` or `'index'`. If not specified but each pair of an index label and data is represented as a key-value pair in the objects selected by `data`, those keys will be used. [more...](#simplified-jsonpath)
 | `datapointLabelMapping` | `object` | `{_dataset: '_dataset', _index: 'x'}` | Key-value pairs for datapoint label mapping. This option is valid only when `rowMapping` is `'datapoint'`. [more...](#datapoint-label-mapping)
-| `data` | `string` | | Simplified JSONPath expression for a two-dimension array of the data. [more...](#simplified-jsonpath)
+| `data` | `string` | | Simplified JSONPath expression for a two-dimensional array of the data. [more...](#simplified-jsonpath)
 
 #### Simplified JSONPath
 
-This plugin uses a simplified version of [JSONPath](https://goessner.net/articles/JsonPath/) expression to select an array or two-dimension array from a JSON document. The top level element in JSON data is an object while that in JSON Lines data is an array. The following elements can be used in an expression.
+This plugin uses a simplified version of [JSONPath](https://goessner.net/articles/JsonPath/) expression to select an array or two-dimensional array from a JSON document. The top level element in JSON data is an object while that in JSON Lines data is an array. The following elements can be used in an expression.
 
 | Element | Description
 | ------- | -----------
