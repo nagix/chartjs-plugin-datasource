@@ -1,6 +1,6 @@
 # chartjs-plugin-datasource
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-datasource.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-datasource) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-datasource.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-datasource) [![Travis](https://img.shields.io/travis/com/nagix/chartjs-plugin-datasource/master.svg?style=flat-square)](https://travis-ci.com/nagix/chartjs-plugin-datasource) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-datasource.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-datasource)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-datasource.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-datasource) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-datasource.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-datasource) [![Build](https://img.shields.io/travis/com/nagix/chartjs-plugin-datasource/master.svg?style=flat-square)](https://travis-ci.com/nagix/chartjs-plugin-datasource) [![Coverage](https://img.shields.io/codeclimate/coverage/nagix/chartjs-plugin-datasource.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-datasource) [![Maintainability](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-datasource.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-datasource)
 
 *[Chart.js](https://www.chartjs.org) plugin for automatic data loading*
 
@@ -391,6 +391,9 @@ The following commands will then be available from the repository root:
 ```bash
 gulp build            # build dist files
 gulp build --watch    # build and watch for changes
+gulp test             # run all tests
+gulp test --watch     # run all tests and watch for changes
+gulp test --coverage  # run all tests and generate code coverage
 gulp lint             # perform code linting
 gulp package          # create an archive with dist files and samples
 ```

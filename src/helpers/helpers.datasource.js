@@ -14,7 +14,7 @@ var datasourceHelpers = {
 	valueOrDefault: helpers.valueOrDefault || helpers.getValueOrDefault,
 
 	getExtension: function(url) {
-		var matches = url.match(/\.([0-9a-z]+)(?:[?#]|$)/i);
+		var matches = url.match(/^[^?#]*\.([0-9a-z]+)(?:[?#]|$)/i);
 
 		if (matches) {
 			return matches[1];
@@ -22,10 +22,15 @@ var datasourceHelpers = {
 	},
 
 	transpose: function(arrays) {
-		var columns = arrays[0].length;
-		var rows = arrays.length;
-		var result = [];
-		var i, j, array;
+		var columns, rows, result, i, j, array;
+
+		if (!arrays.length || !arrays[0].length) {
+			return [[]];
+		}
+
+		columns = arrays[0].length;
+		rows = arrays.length;
+		result = [];
 
 		for (i = 0; i < columns; ++i) {
 			array = [];
