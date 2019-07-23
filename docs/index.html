@@ -157,13 +157,13 @@
             <div class="shell">
               <p>var ctx = document.getElementById('myChart').getContext('2d');</p>
               <p>var chart = new Chart(ctx, {</p>
-              <p>&nbsp;&nbsp;type: 'bar',</p>
-              <p>&nbsp;&nbsp;plugins: [ChartDataSource],</p>
-              <p>&nbsp;&nbsp;options: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-dataset.xlsx'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;}
+              <p>  type: 'bar',</p>
+              <p>  plugins: [ChartDataSource],</p>
+              <p>  options: {</p>
+              <p>    datasource: {</p>
+              <p>      url: 'sample-dataset.xlsx'</p>
+              <p>    }</p>
+              <p>  }
               <p>});</p>
             </div>
           </div>
@@ -180,40 +180,40 @@
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p>&nbsp;&nbsp;...
-              <p>&nbsp;&nbsp;data: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'line',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxisID: 'temperature',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'transparent',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pointBackgroundColor: 'rgb(255, 99, 132)',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tension: 0,
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fill: false
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxisID: 'precipitation',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'transparent'
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}]
-              <p>&nbsp;&nbsp;},
-              <p>&nbsp;&nbsp;...
-              <p>&nbsp;&nbsp;options: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;...
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yAxes: [{
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 'temperature',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridLines: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawOnChartArea: false
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 'precipitation',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position: 'right',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gridLines: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawOnChartArea: false
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;},
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;...
+              <p>  ...
+              <p>  data: {
+              <p>    datasets: [{
+              <p>      type: 'line',
+              <p>      yAxisID: 'temperature',
+              <p>      backgroundColor: 'transparent',
+              <p>      borderColor: 'rgb(255, 99, 132)',
+              <p>      pointBackgroundColor: 'rgb(255, 99, 132)',
+              <p>      tension: 0,
+              <p>      fill: false
+              <p>    }, {
+              <p>      yAxisID: 'precipitation',
+              <p>      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+              <p>      borderColor: 'transparent'
+              <p>    }]
+              <p>  },
+              <p>  ...
+              <p>  options: {
+              <p>    ...
+              <p>    scales: {
+              <p>      yAxes: [{
+              <p>        id: 'temperature',
+              <p>        gridLines: {
+              <p>          drawOnChartArea: false
+              <p>        }
+              <p>      }, {
+              <p>        id: 'precipitation',
+              <p>        position: 'right',
+              <p>        gridLines: {
+              <p>          drawOnChartArea: false
+              <p>        }
+              <p>      }]
+              <p>    },
+              <p>    ...
             </div>
           </div>
           <p>
@@ -290,13 +290,13 @@
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p>&nbsp;&nbsp;...</p>
-              <p>&nbsp;&nbsp;options: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-index.xlsx',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rowMapping: 'index'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>  ...</p>
+              <p>  options: {</p>
+              <p>    datasource: {</p>
+              <p>      url: 'sample-index.xlsx',</p>
+              <p>      rowMapping: 'index'</p>
+              <p>    }</p>
+              <p>    ...</p>
             </div>
           </div>
           <p>
@@ -415,19 +415,19 @@
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p>&nbsp;&nbsp;...</p>
-              <p>&nbsp;&nbsp;options: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-datapoint.xlsx',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rowMapping: 'datapoint',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datapointLabelMapping: {
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_dataset: 'dataset',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_index: 'month',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: 'month',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: 'value'
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>  ...</p>
+              <p>  options: {</p>
+              <p>    datasource: {</p>
+              <p>      url: 'sample-datapoint.xlsx',</p>
+              <p>      rowMapping: 'datapoint',</p>
+              <p>      datapointLabelMapping: {
+              <p>        _dataset: 'dataset',
+              <p>        _index: 'month',
+              <p>        x: 'month',
+              <p>        y: 'value'
+              <p>      }
+              <p>    }</p>
+              <p>    ...</p>
             </div>
           </div>
           <p>
@@ -494,15 +494,15 @@
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p>&nbsp;&nbsp;...</p>
-              <p>&nbsp;&nbsp;options: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;daatasource: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'sample-dataset.xlsx',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasetLabels: 'Sheet1!A2:A3',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;indexLabels: 'Sheet1!D1:G1',
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: 'Sheet1!D2:G3'
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>  ...</p>
+              <p>  options: {</p>
+              <p>    datasource: {</p>
+              <p>      url: 'sample-dataset.xlsx',</p>
+              <p>      datasetLabels: 'Sheet1!A2:A3',
+              <p>      indexLabels: 'Sheet1!D1:G1',
+              <p>      data: 'Sheet1!D2:G3'
+              <p>    }</p>
+              <p>    ...</p>
             </div>
           </div>
           <p>
